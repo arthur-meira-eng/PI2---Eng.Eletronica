@@ -24,14 +24,6 @@ void setup() {
     while (!Serial) delay(10); 
     Serial.println("\n--- INICIALIZANDO AGV EMPILHADEIRA ---");
 
-#if MODO_TESTE_RFID
-    Serial.println("MODO TESTE RFID: sensores I2C e atuadores desabilitados.");
-    initRFID();
-    Serial.println("Leitor RFID: OK");
-    Serial.println("--- SISTEMA PRONTO PARA TESTE RFID ---\n");
-    return;
-#endif
-
     // 2. Inicializa Barramento I2C (Compartilhado por ToF, MPU e ADC)
     Wire.begin(I2C_SDA, I2C_SCL);
     Serial.println("Barramento I2C: OK");
@@ -46,11 +38,7 @@ void setup() {
     initUltrassom();
     Serial.println("Ultrassom: OK");
 
-    // 4. Inicializa RFID via SPI cedo para facilitar debug de tag
-    initRFID();     // RC522 via SPI
-    Serial.println("Leitor RFID: OK");
-
-    // 5. Inicializa Dispositivos I2C
+    // 4. Inicializa Dispositivos I2C e SPI
     initToF();      // Gerencia os dois VL53L0X via XSHUT
     Serial.println("Sensores ToF: OK");
 
@@ -60,7 +48,10 @@ void setup() {
     initADC();      // ADS1115 para Bateria e Corrente
     Serial.println("ADC ADS1115: OK");
 
-    // 6. Inicializa Comunicação com a Raspberry Pi (UART2)
+    initRFID();     // RC522 via SPI
+    Serial.println("Leitor RFID: OK");
+
+    // 5. Inicializa Comunicação com a Raspberry Pi (UART2)
     initComunicacao(); 
     Serial.println("Comunicacao Raspberry: OK");
 
@@ -68,30 +59,11 @@ void setup() {
 }
 
 void loop() {
-#if MODO_TESTE_RFID
-    String tagTesteRFID = lerTagRFID();
-    if (tagTesteRFID.length() > 0) {
-        Serial.print("RFID detectado: ");
-        Serial.println(tagTesteRFID);
-    }
-    delay(10);
-    return;
-#endif
-
     // --- 1. COMUNICAÇÃO ---
     // Escuta comandos vindos da Raspberry (ex: "PARAR")
     lerComandos();
 
-    // --- 2. RFID (INTERRUPÇÃO) ---
-    String tagRFID = lerTagRFID();
-    if (tagRFID.length() > 0) {
-        Serial.print("RFID detectado: ");
-        Serial.println(tagRFID);
-        Serial2.print("RFID:");
-        Serial2.println(tagRFID);
-    }
-
-    // --- 3. MONITORAMENTO DE SEGURANÇA (HARDWARE) ---
+    // --- 2. MONITORAMENTO DE SEGURANÇA (HARDWARE) ---
     float vBat1 = lerTensaoBateria(1);
     float vBat2 = lerTensaoBateria(2);
     
@@ -101,13 +73,13 @@ void loop() {
         pararTudo(); 
     }
 
-    // --- 4. LEITURA DE SENSORES ---
+    // --- 3. LEITURA DE SENSORES ---
     lerSensoresToF(distToF1, distToF2);
     float distUltra = lerDistancia();
     float iM1 = lerCorrenteMotor(1);
     float iM2 = lerCorrenteMotor(2);
 
-    // --- 5. TELEMETRIA PARA RASPBERRY ---
+    // --- 4. TELEMETRIA PARA RASPBERRY ---
     // Envia dados a cada 500ms para não sobrecarregar a serial
     static unsigned long tTele = 0;
     if (millis() - tTele > 500) {
@@ -115,7 +87,7 @@ void loop() {
         tTele = millis();
     }
 
-    // --- 6. DEBUG (OPCIONAL) ---
+    // --- 5. DEBUG (OPCIONAL) ---
     /*
     Serial.printf("Distâncias -> ToF1: %dmm | ToF2: %dmm | Ultra: %.2fcm\n", distToF1, distToF2, distUltra);
     Serial.printf("Encoders -> Esq: %ld | Dir: %ld\n", lerPassosEsq(), lerPassosDir());

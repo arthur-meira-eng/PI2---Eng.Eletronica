@@ -1,0 +1,12 @@
+/home/yaba/Sandbox/PI2---Eng.Eletronica/build/esp32/core/HashBuilder.cpp.o: \
+ /home/yaba/.arduino15/packages/esp32/hardware/esp32/3.3.8/cores/esp32/HashBuilder.cpp \
+ /home/yaba/.arduino15/packages/esp32/hardware/esp32/3.3.8/cores/esp32/HashBuilder.h \
+ /home/yaba/.arduino15/packages/esp32/hardware/esp32/3.3.8/cores/esp32/WString.h \
+ /home/yaba/.arduino15/packages/esp32/hardware/esp32/3.3.8/cores/esp32/pgmspace.h \
+ /home/yaba/.arduino15/packages/esp32/tools/esp32-libs/3.3.8/include/newlib/platform_include/ctype.h \
+ /home/yaba/.arduino15/packages/esp32/hardware/esp32/3.3.8/cores/esp32/Stream.h \
+ /home/yaba/.arduino15/packages/esp32/hardware/esp32/3.3.8/cores/esp32/Print.h \
+ /home/yaba/.arduino15/packages/esp32/tools/esp32-libs/3.3.8/include/newlib/platform_include/stdio.h \
+ /home/yaba/.arduino15/packages/esp32/hardware/esp32/3.3.8/cores/esp32/WString.h \
+ /home/yaba/.arduino15/packages/esp32/hardware/esp32/3.3.8/cores/esp32/Printable.h \
+ /home/yaba/.arduino15/packages/esp32/hardware/esp32/3.3.8/cores/esp32/HEXBuilder.h

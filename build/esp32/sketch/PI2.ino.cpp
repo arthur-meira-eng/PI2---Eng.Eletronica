@@ -1,3 +1,5 @@
+#include <Arduino.h>
+#line 1 "/home/yaba/Sandbox/PI2---Eng.Eletronica/PI2/PI2.ino"
 /**
  * PROJETO: AGV Empilhadeira - PI2 (UnB FGA)
  * AUTOR: Arthur Henrique / Karen Julia
@@ -18,6 +20,11 @@
 uint16_t distToF1, distToF2;
 float accX, accY, accZ;
 
+#line 21 "/home/yaba/Sandbox/PI2---Eng.Eletronica/PI2/PI2.ino"
+void setup();
+#line 70 "/home/yaba/Sandbox/PI2---Eng.Eletronica/PI2/PI2.ino"
+void loop();
+#line 21 "/home/yaba/Sandbox/PI2---Eng.Eletronica/PI2/PI2.ino"
 void setup() {
     // 1. Inicializa Comunicação Serial para Debug (USB)
     Serial.begin(115200);
@@ -123,3 +130,4 @@ void loop() {
 
     delay(10); // Loop rápido para garantir resposta imediata aos comandos UART
 }
+
