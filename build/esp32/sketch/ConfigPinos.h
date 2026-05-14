@@ -4,7 +4,13 @@
 
 // Use 1 para testar somente o RFID sem inicializar sensores I2C/motores.
 // Necessario quando o RST do RC522 esta no GPIO 22, que tambem e o SCL padrao.
-#define MODO_TESTE_RFID 1
+#define MODO_TESTE_RFID 0
+
+// Use 1 para testar somente o sensor ultrassonico HC-SR04.
+#define MODO_TESTE_ULTRASSOM 0
+
+// Use 1 para testar somente o MPU6050 no barramento I2C.
+#define MODO_TESTE_MPU 1
 
 // --- Motores (Etiquetas do Esquema) ---
 #define PWM_ESQ   27
@@ -21,12 +27,18 @@
 #define XSHUT_2   13  // VL53L0X U26
 
 // --- Sensor Ultrassônico HC-SR04 ---
-#define TRIG_PIN  4
-#define ECHO_PIN  16
+#define TRIG_PIN  18
+#define ECHO_PIN  5
 
 // --- RFID RC522 (SPI) ---
 #define SS_PIN    5
-#define RST_PIN   22
+
+#if MODO_TESTE_RFID
+    #define RST_PIN   22
+#else
+    #define RST_PIN   17
+#endif
+
 #define IRQ_PIN   4
 #define RFID_USAR_IRQ 1
 

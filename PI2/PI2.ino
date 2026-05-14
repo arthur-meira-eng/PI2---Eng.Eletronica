@@ -22,7 +22,25 @@ void setup() {
     // 1. Inicializa Comunicação Serial para Debug (USB)
     Serial.begin(115200);
     while (!Serial) delay(10); 
+    delay(500);
+    Serial.println("[SETUP] Serial USB iniciada em 115200 baud.");
     Serial.println("\n--- INICIALIZANDO AGV EMPILHADEIRA ---");
+
+#if MODO_TESTE_ULTRASSOM
+    Serial.println("MODO TESTE ULTRASSOM: demais sensores e atuadores desabilitados.");
+    initUltrassom();
+    Serial.println("--- SISTEMA PRONTO PARA TESTE DO ULTRASSOM ---\n");
+    return;
+#endif
+
+#if MODO_TESTE_MPU
+    Serial.println("MODO TESTE MPU6050: demais sensores e atuadores desabilitados.");
+    Wire.begin(I2C_SDA, I2C_SCL);
+    Serial.printf("[I2C] SDA=GPIO %d | SCL=GPIO %d\n", I2C_SDA, I2C_SCL);
+    initIMU();
+    Serial.println("--- SISTEMA PRONTO PARA TESTE DO MPU6050 ---\n");
+    return;
+#endif
 
 #if MODO_TESTE_RFID
     Serial.println("MODO TESTE RFID: sensores I2C e atuadores desabilitados.");
@@ -68,6 +86,18 @@ void setup() {
 }
 
 void loop() {
+#if MODO_TESTE_ULTRASSOM
+    diagnosticarUltrassom();
+    delay(50);
+    return;
+#endif
+
+#if MODO_TESTE_MPU
+    diagnosticarIMU();
+    delay(10);
+    return;
+#endif
+
 #if MODO_TESTE_RFID
     String tagTesteRFID = lerTagRFID();
     if (tagTesteRFID.length() > 0) {

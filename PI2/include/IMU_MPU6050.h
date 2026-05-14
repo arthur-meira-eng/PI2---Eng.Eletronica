@@ -7,5 +7,10 @@
 
 void initIMU();
 void lerAceleracao(float &x, float &y, float &z);
+void lerIMU(float &accX, float &accY, float &accZ,
+            float &gyroX, float &gyroY, float &gyroZ,
+            float &temperatura);
+void lerAngulosIMU(float &anguloX, float &anguloY);
+void diagnosticarIMU();
 
 #endif

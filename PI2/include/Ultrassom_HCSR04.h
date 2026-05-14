@@ -5,5 +5,6 @@
 
 void initUltrassom();
 float lerDistancia();
+void diagnosticarUltrassom();
 
 #endif
