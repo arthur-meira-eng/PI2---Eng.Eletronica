@@ -16,25 +16,32 @@ void IRAM_ATTR interrupcaoDir() {
 }
 
 void initEncoders() {
-    // Definir os pinos conforme seu esquemático (Ex: GPIOs 34 e 35 que são INPUT ONLY)
-    // Se no seu PCB você usou outros, ajuste no ConfigPinos.h
-    pinMode(ENCODER_A_PIN, INPUT_PULLUP); 
-    pinMode(ENCODER_B_PIN, INPUT_PULLUP);
+    // GPIOs 34 e 35 sao somente entrada e nao oferecem pull-up interno confiavel.
+    // O condicionamento eletrico deve ficar no encoder/PCB.
+    pinMode(ENCODER_ESQ_PIN, INPUT);
+    pinMode(ENCODER_DIR_PIN, INPUT);
 
-    // Configura a interrupção para disparar na subida do sinal (RISING)
-    attachInterrupt(digitalPinToInterrupt(ENCODER_A_PIN), interrupcaoEsq, RISING);
-    attachInterrupt(digitalPinToInterrupt(ENCODER_B_PIN), interrupcaoDir, RISING);
+    attachInterrupt(digitalPinToInterrupt(ENCODER_ESQ_PIN), interrupcaoEsq, ENCODER_INTERRUPCAO);
+    attachInterrupt(digitalPinToInterrupt(ENCODER_DIR_PIN), interrupcaoDir, ENCODER_INTERRUPCAO);
 }
 
 long lerPassosEsq() {
-    return contadorEsq;
+    noInterrupts();
+    long passos = contadorEsq;
+    interrupts();
+    return passos;
 }
 
 long lerPassosDir() {
-    return contadorDir;
+    noInterrupts();
+    long passos = contadorDir;
+    interrupts();
+    return passos;
 }
 
 void resetarEncoders() {
+    noInterrupts();
     contadorEsq = 0;
     contadorDir = 0;
+    interrupts();
 }

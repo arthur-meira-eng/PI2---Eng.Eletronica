@@ -33,10 +33,20 @@ void setup() {
     return;
 #endif
 
-#if MODO_TESTE_MPU
+#if 
+
+
+
+
+
+
+
+
+
     Serial.println("MODO TESTE MPU6050: demais sensores e atuadores desabilitados.");
     Wire.begin(I2C_SDA, I2C_SCL);
     Serial.printf("[I2C] SDA=GPIO %d | SCL=GPIO %d\n", I2C_SDA, I2C_SCL);
+    initComunicacao();
     initIMU();
     Serial.println("--- SISTEMA PRONTO PARA TESTE DO MPU6050 ---\n");
     return;

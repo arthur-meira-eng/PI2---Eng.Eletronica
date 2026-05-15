@@ -22,7 +22,7 @@ float accX, accY, accZ;
 
 #line 21 "/home/yaba/Sandbox/PI2---Eng.Eletronica/PI2/PI2.ino"
 void setup();
-#line 88 "/home/yaba/Sandbox/PI2---Eng.Eletronica/PI2/PI2.ino"
+#line 89 "/home/yaba/Sandbox/PI2---Eng.Eletronica/PI2/PI2.ino"
 void loop();
 #line 21 "/home/yaba/Sandbox/PI2---Eng.Eletronica/PI2/PI2.ino"
 void setup() {
@@ -44,6 +44,7 @@ void setup() {
     Serial.println("MODO TESTE MPU6050: demais sensores e atuadores desabilitados.");
     Wire.begin(I2C_SDA, I2C_SCL);
     Serial.printf("[I2C] SDA=GPIO %d | SCL=GPIO %d\n", I2C_SDA, I2C_SCL);
+    initComunicacao();
     initIMU();
     Serial.println("--- SISTEMA PRONTO PARA TESTE DO MPU6050 ---\n");
     return;

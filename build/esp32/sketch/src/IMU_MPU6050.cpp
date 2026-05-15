@@ -278,14 +278,6 @@ void diagnosticarIMU() {
 
     ultimoLog = millis();
 
-    Serial.printf("[MPU TESTE] Accel bruto m/s^2 -> X: %.2f | Y: %.2f | Z: %.2f\n",
-                  accBrutoX, accBrutoY, accBrutoZ);
-    Serial.printf("[MPU TESTE] Gyro bruto rad/s -> X: %.3f | Y: %.3f | Z: %.3f\n",
-                  gyroBrutoX, gyroBrutoY, gyroBrutoZ);
-    Serial.printf("[MPU TESTE] Angulo accel deg -> Eixo X: %.2f | Eixo Y: %.2f\n",
-                  anguloAccelX, anguloAccelY);
-    Serial.printf("[MPU TESTE] Kalman deg       -> Eixo X: %.2f | Eixo Y: %.2f | dt: %.4fs\n",
-                  anguloKalmanX, anguloKalmanY, ultimoDt);
-    Serial.printf("[MPU TESTE] Bias gyro deg/s  -> Eixo X: %.4f | Eixo Y: %.4f | Temp: %.2f C\n",
-                  kalmanEixoX.bias, kalmanEixoY.bias, tempFiltrada);
+    Serial.printf("[MPU] X: %.2f deg | Y: %.2f deg\n", anguloKalmanX, anguloKalmanY);
+    Serial2.printf("MPU_X:%.2f|MPU_Y:%.2f\n", anguloKalmanX, anguloKalmanY);
 }

@@ -10,7 +10,7 @@
 #define MODO_TESTE_ULTRASSOM 0
 
 // Use 1 para testar somente o MPU6050 no barramento I2C.
-#define MODO_TESTE_MPU 1
+#define MODO_TESTE_MPU 0
 
 // --- Motores (Etiquetas do Esquema) ---
 #define PWM_ESQ   27
@@ -43,7 +43,8 @@
 #define RFID_USAR_IRQ 1
 
 // --- Encoders ---
-#define ENCODER_A_PIN  34  // CN10
-#define ENCODER_B_PIN  35  // CN11
+#define ENCODER_ESQ_PIN  34  // CN10 - requer pull-up/pull-down externo no ESP32
+#define ENCODER_DIR_PIN  35  // CN11 - requer pull-up/pull-down externo no ESP32
+#define ENCODER_INTERRUPCAO RISING
 
 #endif
