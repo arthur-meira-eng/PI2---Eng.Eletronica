@@ -278,5 +278,4 @@ void diagnosticarIMU() {
     ultimoLog = millis();
 
     Serial.printf("[MPU] X: %.2f deg | Y: %.2f deg\n", anguloKalmanX, anguloKalmanY);
-    Serial2.printf("MPU_X:%.2f|MPU_Y:%.2f\n", anguloKalmanX, anguloKalmanY);
 }

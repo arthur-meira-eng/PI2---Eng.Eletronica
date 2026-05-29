@@ -1,37 +1,55 @@
-#line 1 "/home/yaba/Sandbox/PI2---Eng.Eletronica/PI2/ConfigPinos.h"
+#line 1 "/Users/yaba/Sandbox/PI2---Eng.Eletronica/PI2/ConfigPinos.h"
 #ifndef CONFIG_PINOS_H
 #define CONFIG_PINOS_H
 
-// Use 1 para testar somente o RFID sem inicializar sensores I2C/motores.
+// para testar somente o RFID sem inicializar sensores I2C/motores.
 // Necessario quando o RST do RC522 esta no GPIO 22, que tambem e o SCL padrao.
 #define MODO_TESTE_RFID 0
 
-// Use 1 para testar somente o sensor ultrassonico HC-SR04.
+// para testar somente o sensor ultrassonico HC-SR04.
 #define MODO_TESTE_ULTRASSOM 0
 
-// Use 1 para testar somente o MPU6050 no barramento I2C.
+// para testar somente o MPU6050 no barramento I2C.
 #define MODO_TESTE_MPU 0
 
+// para testar somente os motores, sem inicializar sensores.
+#define MODO_TESTE_MOTORES 1
+#define TESTE_MOTOR_PWM 120
+#define TESTE_MOTOR_CARGA_PWM 100
+#define TESTE_MOTOR_ETAPA_MS 10000
+
+// para imprimir um resumo periodico dos componentes integrados no USB.
+#define DEBUG_TELEMETRIA_USB 1
+#define INTERVALO_LOG_SISTEMA_MS 1000
+
 // --- Motores (Etiquetas do Esquema) ---
-#define PWM_ESQ   27
-#define DIR_ESQ   26
+#define PWM_ESQ   32
+#define DIR_ESQ   33
 #define PWM_DIR   25
-#define DIR_DIR   33
-#define PWM_CARG  32
-#define DIR_CARG  12
+#define DIR_DIR   26
+#define PWM_CARG  27
+#define DIR_CARG  14
 
 // --- Sensores I2C (SDA=21, SCL=22) ---
 #define I2C_SDA   21
 #define I2C_SCL   22
-#define XSHUT_1   14  // VL53L0X U25
-#define XSHUT_2   13  // VL53L0X U26
+
+#define XSHUT_1   4  // VL53L0X U25
+#define XSHUT_2   2  // VL53L0X U26
+
+// SENSOR IR
+#define IR_PIN 15
 
 // --- Sensor Ultrassônico HC-SR04 ---
-#define TRIG_PIN  18
-#define ECHO_PIN  5
+// GPIO 18 e GPIO 5 ficam reservados ao SPI do RC522 (SCK e SS).
+#define TRIG_PIN  12
+#define ECHO_PIN  13  // entrada somente; use divisor de tensao no ECHO do HC-SR04
 
 // --- RFID RC522 (SPI) ---
-#define SS_PIN    5
+#define SPI_SCK_PIN   18
+#define SPI_MISO_PIN  19
+#define SPI_MOSI_PIN  23
+#define SS_PIN        5
 
 #if MODO_TESTE_RFID
     #define RST_PIN   22
@@ -43,8 +61,64 @@
 #define RFID_USAR_IRQ 1
 
 // --- Encoders ---
-#define ENCODER_ESQ_PIN  34  // CN10 - requer pull-up/pull-down externo no ESP32
-#define ENCODER_DIR_PIN  35  // CN11 - requer pull-up/pull-down externo no ESP32
+#define ENCODER_ESQ_A_PIN  39  // CN10 - requer pull-up/pull-down externo no ESP32
+#define ENCODER_DIR_A_PIN  36  // CN11 - requer pull-up/pull-down externo no ESP32
+
+#define ENCODER_ESQ_B_PIN  35  // CN11 - requer pull-up/pull-down externo no ESP32
+#define ENCODER_DIR_B_PIN  34  // CN11 - requer pull-up/pull-down externo no ESP32
+
 #define ENCODER_INTERRUPCAO RISING
+
+#define ASSERT_PIN_DIFF(A, B) static_assert((A) != (B), "Conflito de GPIO entre " #A " e " #B ".")
+
+#if !MODO_TESTE_RFID
+ASSERT_PIN_DIFF(RST_PIN, I2C_SCL);
+ASSERT_PIN_DIFF(RST_PIN, TRIG_PIN);
+ASSERT_PIN_DIFF(RST_PIN, ECHO_PIN);
+#endif
+
+ASSERT_PIN_DIFF(PWM_ESQ, DIR_ESQ);
+ASSERT_PIN_DIFF(PWM_ESQ, PWM_DIR);
+ASSERT_PIN_DIFF(PWM_ESQ, DIR_DIR);
+ASSERT_PIN_DIFF(PWM_ESQ, PWM_CARG);
+ASSERT_PIN_DIFF(PWM_ESQ, DIR_CARG);
+ASSERT_PIN_DIFF(DIR_ESQ, PWM_DIR);
+ASSERT_PIN_DIFF(DIR_ESQ, DIR_DIR);
+ASSERT_PIN_DIFF(DIR_ESQ, PWM_CARG);
+ASSERT_PIN_DIFF(DIR_ESQ, DIR_CARG);
+ASSERT_PIN_DIFF(PWM_DIR, DIR_DIR);
+ASSERT_PIN_DIFF(PWM_DIR, PWM_CARG);
+ASSERT_PIN_DIFF(PWM_DIR, DIR_CARG);
+ASSERT_PIN_DIFF(DIR_DIR, PWM_CARG);
+ASSERT_PIN_DIFF(DIR_DIR, DIR_CARG);
+ASSERT_PIN_DIFF(PWM_CARG, DIR_CARG);
+
+ASSERT_PIN_DIFF(I2C_SDA, I2C_SCL);
+ASSERT_PIN_DIFF(I2C_SDA, XSHUT_1);
+ASSERT_PIN_DIFF(I2C_SDA, XSHUT_2);
+ASSERT_PIN_DIFF(I2C_SCL, XSHUT_1);
+ASSERT_PIN_DIFF(I2C_SCL, XSHUT_2);
+ASSERT_PIN_DIFF(XSHUT_1, XSHUT_2);
+
+ASSERT_PIN_DIFF(TRIG_PIN, ECHO_PIN);
+ASSERT_PIN_DIFF(TRIG_PIN, SPI_SCK_PIN);
+ASSERT_PIN_DIFF(TRIG_PIN, SS_PIN);
+ASSERT_PIN_DIFF(ECHO_PIN, SPI_SCK_PIN);
+ASSERT_PIN_DIFF(ECHO_PIN, SS_PIN);
+
+ASSERT_PIN_DIFF(SPI_SCK_PIN, SPI_MISO_PIN);
+ASSERT_PIN_DIFF(SPI_SCK_PIN, SPI_MOSI_PIN);
+ASSERT_PIN_DIFF(SPI_SCK_PIN, SS_PIN);
+ASSERT_PIN_DIFF(SPI_MISO_PIN, SPI_MOSI_PIN);
+ASSERT_PIN_DIFF(SPI_MISO_PIN, SS_PIN);
+ASSERT_PIN_DIFF(SPI_MOSI_PIN, SS_PIN);
+ASSERT_PIN_DIFF(SS_PIN, IRQ_PIN);
+
+ASSERT_PIN_DIFF(ENCODER_ESQ_A_PIN, ENCODER_ESQ_B_PIN);
+ASSERT_PIN_DIFF(ENCODER_ESQ_A_PIN, ENCODER_DIR_A_PIN);
+ASSERT_PIN_DIFF(ENCODER_ESQ_A_PIN, ENCODER_DIR_B_PIN);
+ASSERT_PIN_DIFF(ENCODER_ESQ_B_PIN, ENCODER_DIR_A_PIN);
+ASSERT_PIN_DIFF(ENCODER_ESQ_B_PIN, ENCODER_DIR_B_PIN);
+ASSERT_PIN_DIFF(ENCODER_DIR_A_PIN, ENCODER_DIR_B_PIN);
 
 #endif

@@ -124,14 +124,10 @@ void recuperarBuscaRFIDPorIRQ(bool reiniciarLeitor = false) {
 
 void initRFID() {
     Serial.println("[RFID] Inicializando barramento SPI...");
-    Serial.print("[RFID] SS/CS: GPIO ");
-    Serial.print(SS_PIN);
-    Serial.print(" | RST: GPIO ");
-    Serial.print(RST_PIN);
-    Serial.print(" | IRQ: GPIO ");
-    Serial.println(IRQ_PIN);
+    Serial.printf("[RFID] SPI SCK=GPIO %d | MISO=GPIO %d | MOSI=GPIO %d | SS/CS=GPIO %d | RST=GPIO %d | IRQ=GPIO %d\n",
+                  SPI_SCK_PIN, SPI_MISO_PIN, SPI_MOSI_PIN, SS_PIN, RST_PIN, IRQ_PIN);
 
-    SPI.begin();
+    SPI.begin(SPI_SCK_PIN, SPI_MISO_PIN, SPI_MOSI_PIN, SS_PIN);
     mfrc522.PCD_Init();
 
     byte version = mfrc522.PCD_ReadRegister(MFRC522::VersionReg);

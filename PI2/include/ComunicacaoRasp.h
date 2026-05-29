@@ -3,7 +3,7 @@
 
 #include <Arduino.h>
 
-// UART2 - Pinos 16 (RX) e 17 (TX)
+// Compatibilidade: a comunicacao com Raspberry foi removida do projeto.
 void initComunicacao();
 void lerComandos();
 void enviarDados();

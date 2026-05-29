@@ -1,4 +1,4 @@
-#line 1 "/home/yaba/Sandbox/PI2---Eng.Eletronica/PI2/src/IMU_MPU6050.cpp"
+#line 1 "/Users/yaba/Sandbox/PI2---Eng.Eletronica/PI2/src/IMU_MPU6050.cpp"
 #include "../include/IMU_MPU6050.h"
 #include <math.h>
 
@@ -279,5 +279,4 @@ void diagnosticarIMU() {
     ultimoLog = millis();
 
     Serial.printf("[MPU] X: %.2f deg | Y: %.2f deg\n", anguloKalmanX, anguloKalmanY);
-    Serial2.printf("MPU_X:%.2f|MPU_Y:%.2f\n", anguloKalmanX, anguloKalmanY);
 }

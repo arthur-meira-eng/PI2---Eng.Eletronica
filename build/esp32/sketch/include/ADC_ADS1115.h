@@ -1,4 +1,4 @@
-#line 1 "/home/yaba/Sandbox/PI2---Eng.Eletronica/PI2/include/ADC_ADS1115.h"
+#line 1 "/Users/yaba/Sandbox/PI2---Eng.Eletronica/PI2/include/ADC_ADS1115.h"
 #ifndef ADC_ADS1115_H
 #define ADC_ADS1115_H
 

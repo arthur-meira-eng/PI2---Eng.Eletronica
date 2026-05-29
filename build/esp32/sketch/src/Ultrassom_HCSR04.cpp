@@ -1,4 +1,4 @@
-#line 1 "/home/yaba/Sandbox/PI2---Eng.Eletronica/PI2/src/Ultrassom_HCSR04.cpp"
+#line 1 "/Users/yaba/Sandbox/PI2---Eng.Eletronica/PI2/src/Ultrassom_HCSR04.cpp"
 #include "../include/Ultrassom_HCSR04.h"
 #include "../ConfigPinos.h"
 

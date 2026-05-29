@@ -1,4 +1,4 @@
-#line 1 "/home/yaba/Sandbox/PI2---Eng.Eletronica/PI2/include/IMU_MPU6050.h"
+#line 1 "/Users/yaba/Sandbox/PI2---Eng.Eletronica/PI2/include/IMU_MPU6050.h"
 #ifndef IMU_MPU6050_H
 #define IMU_MPU6050_H
 
