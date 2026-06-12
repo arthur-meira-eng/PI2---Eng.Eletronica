@@ -35,40 +35,79 @@ void iniciarI2C() {
     Serial.printf("[I2C] Barramento iniciado: SDA=GPIO %d | SCL=GPIO %d\n", I2C_SDA, I2C_SCL);
 }
 
-void diagnosticarMotores() {
+void diagnosticarMotoresEncoders() {
     struct EtapaMotor {
         const char *nome;
         int velEsq;
         int velDir;
         int velCarga;
         bool cargaSobe;
+        bool resetarContagem;
     };
 
     static const EtapaMotor etapas[] = {
-        {"PARADO", 0, 0, 0, true},
-        {"AMBOS FRENTE", TESTE_MOTOR_PWM, TESTE_MOTOR_PWM, 0, true},
-        {"PARADO", 0, 0, 0, true},
-        {"AMBOS TRAS", -TESTE_MOTOR_PWM, -TESTE_MOTOR_PWM, 0, true},
+        {"PARADO", 0, 0, 0, true, false},
+        {"AMBOS FRENTE", TESTE_MOTOR_PWM, TESTE_MOTOR_PWM, 0, true, true},
+        // {"PARADO", 0, 0, 0, true, false},
+        // {"AMBOS TRAS", -TESTE_MOTOR_PWM, -TESTE_MOTOR_PWM, 0, true, true},
+        // {"PARADO", 0, 0, 0, true, false},
     };
 
     static uint8_t etapaAtual = 0;
     static unsigned long inicioEtapa = 0;
+    static unsigned long ultimoLog = 0;
     static bool primeiraExecucao = true;
+    static long passosEsqAnterior = 0;
+    static long passosDirAnterior = 0;
 
     if (primeiraExecucao || millis() - inicioEtapa >= TESTE_MOTOR_ETAPA_MS) {
         primeiraExecucao = false;
         inicioEtapa = millis();
+        ultimoLog = 0;
 
         const EtapaMotor &etapa = etapas[etapaAtual];
-        acionarMotorEsq(etapa.velEsq);
-        acionarMotorDir(etapa.velDir);
-        acionarMotorCarga(etapa.velCarga, etapa.cargaSobe);
+        pararTudo();
+        delay(100);
 
-        Serial.printf("[TESTE MOTOR] %-15s | Esq=%4d Dir=%4d Carga=%3d %s | t=%lums\n",
+        if (etapa.velEsq != 0) {
+            acionarMotorEsq(etapa.velEsq);
+        }
+
+        if (etapa.velDir != 0) {
+            acionarMotorDir(etapa.velDir);
+        }
+
+        if (etapa.velCarga != 0) {
+            acionarMotorCarga(etapa.velCarga, etapa.cargaSobe);
+        }
+
+        if (etapa.resetarContagem) {
+            resetarEncoders();
+        }
+
+        passosEsqAnterior = lerPassosEsq();
+        passosDirAnterior = lerPassosDir();
+
+        Serial.printf("[TESTE MOTOR+ENC] %-15s | Esq=%4d Dir=%4d Carga=%3d %s | ENC_E=%ld ENC_D=%ld | t=%lums\n",
                       etapa.nome, etapa.velEsq, etapa.velDir, etapa.velCarga,
-                      etapa.cargaSobe ? "SOBE" : "DESCE", millis());
+                      etapa.cargaSobe ? "SOBE" : "DESCE",
+                      passosEsqAnterior, passosDirAnterior, millis());
 
         etapaAtual = (etapaAtual + 1) % (sizeof(etapas) / sizeof(etapas[0]));
+    }
+
+    if (millis() - ultimoLog >= INTERVALO_LOG_SISTEMA_MS) {
+        const long passosEsq = lerPassosEsq();
+        const long passosDir = lerPassosDir();
+
+        Serial.printf("[ENCODERS] Esq=%ld d=%+ld | Dir=%ld d=%+ld | etapa ha %lums\n",
+                      passosEsq, passosEsq - passosEsqAnterior,
+                      passosDir, passosDir - passosDirAnterior,
+                      millis() - inicioEtapa);
+
+        passosEsqAnterior = passosEsq;
+        passosDirAnterior = passosDir;
+        ultimoLog = millis();
     }
 }
 
@@ -105,12 +144,15 @@ void setup() {
 #endif
 
 #if MODO_TESTE_MOTORES
-    Serial.println("MODO TESTE MOTORES: sensores e comunicacoes desabilitados.");
-    Serial.printf("[TESTE MOTOR] PWM tracao=%d | PWM carga=%d | etapa=%lums\n",
+    Serial.println("MODO TESTE MOTORES + ENCODERS: demais sensores e comunicacoes desabilitados.");
+    Serial.printf("[TESTE MOTOR+ENC] PWM tracao=%d | PWM carga=%d | etapa=%lums | log encoders=%lums\n",
                   TESTE_MOTOR_PWM, TESTE_MOTOR_CARGA_PWM, (unsigned long)TESTE_MOTOR_ETAPA_MS);
     initMotores();
-    Serial.println("[TESTE MOTOR] Sequencia: parado -> ambos frente -> parado -> ambos tras.");
-    Serial.println("--- SISTEMA PRONTO PARA TESTE DOS MOTORES ---\n");
+    initEncoders();
+    resetarEncoders();
+    Serial.println("[TESTE MOTOR+ENC] Sequencia: esq frente -> dir frente -> ambos frente -> ambos tras -> carga sobe -> carga desce.");
+    Serial.println("[TESTE MOTOR+ENC] Observe se as contagens/deltas dos encoders mudam junto com os motores de tracao.");
+    Serial.println("--- SISTEMA PRONTO PARA TESTE DOS MOTORES E ENCODERS ---\n");
     return;
 #endif
 
@@ -161,7 +203,7 @@ void loop() {
 #endif
 
 #if MODO_TESTE_MOTORES
-    diagnosticarMotores();
+    diagnosticarMotoresEncoders();
     delay(10);
     return;
 #endif

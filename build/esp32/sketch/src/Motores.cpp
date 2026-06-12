@@ -19,13 +19,21 @@ void initMotores() {
 
 void acionarMotorEsq(int velocidade) {
     velocidade = constrain(velocidade, -255, 255);
-    digitalWrite(DIR_ESQ, velocidade >= 0 ? HIGH : LOW);
+    bool sentidoFrente = velocidade >= 0;
+#if MOTOR_ESQ_INVERTIDO
+    sentidoFrente = !sentidoFrente;
+#endif
+    digitalWrite(DIR_ESQ, sentidoFrente ? HIGH : LOW);
     analogWrite(PWM_ESQ, abs(velocidade));
 }
 
 void acionarMotorDir(int velocidade) {
     velocidade = constrain(velocidade, -255, 255);
-    digitalWrite(DIR_DIR, velocidade >= 0 ? HIGH : LOW);
+    bool sentidoFrente = velocidade >= 0;
+#if MOTOR_DIR_INVERTIDO
+    sentidoFrente = !sentidoFrente;
+#endif
+    digitalWrite(DIR_DIR, sentidoFrente ? HIGH : LOW);
     analogWrite(PWM_DIR, abs(velocidade));
 }
 
@@ -39,4 +47,10 @@ void pararTudo() {
     analogWrite(PWM_ESQ, 0);
     analogWrite(PWM_DIR, 0);
     analogWrite(PWM_CARG, 0);
+    digitalWrite(PWM_ESQ, LOW);
+    digitalWrite(PWM_DIR, LOW);
+    digitalWrite(PWM_CARG, LOW);
+    digitalWrite(DIR_ESQ, LOW);
+    digitalWrite(DIR_DIR, LOW);
+    digitalWrite(DIR_CARG, LOW);
 }

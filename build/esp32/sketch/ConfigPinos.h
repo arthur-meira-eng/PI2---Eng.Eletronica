@@ -30,6 +30,11 @@
 #define PWM_CARG  27
 #define DIR_CARG  14
 
+// Ajuste de sentido dos motores de tracao.
+// Use 1 quando "frente" no software estiver fazendo o motor girar para tras.
+#define MOTOR_ESQ_INVERTIDO 1
+#define MOTOR_DIR_INVERTIDO 1
+
 // --- Sensores I2C (SDA=21, SCL=22) ---
 #define I2C_SDA   21
 #define I2C_SCL   22
