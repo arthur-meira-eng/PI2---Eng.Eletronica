@@ -1,33 +1,51 @@
 #ifndef CONFIG_PINOS_H
 #define CONFIG_PINOS_H
 
-// para testar somente o RFID sem inicializar sensores I2C/motores.
-// Necessario quando o RST do RC522 esta no GPIO 22, que tambem e o SCL padrao.
+// =============================================================================
+// MODOS DE TESTE / DIAGNÓSTICO INDIVIDUAL
+// =============================================================================
+// Se algum destes for definido como 1, o firmware entra no modo de teste isolado
+// daquele componente, desativando todo o resto.
+// Se todos forem 0, o firmware roda no modo de operação integrado.
 #define MODO_TESTE_RFID 0
-
-// para testar somente o sensor ultrassonico HC-SR04.
 #define MODO_TESTE_ULTRASSOM 0
-
-// para testar somente o MPU6050 no barramento I2C.
 #define MODO_TESTE_MPU 0
-
-// para testar somente os motores, sem inicializar sensores.
 #define MODO_TESTE_MOTORES 1
+
 #define TESTE_MOTOR_PWM 120
 #define TESTE_MOTOR_CARGA_PWM 100
 #define TESTE_MOTOR_ETAPA_MS 10000
 
-// para imprimir um resumo periodico dos componentes integrados no USB.
+// =============================================================================
+// ATIVAÇÃO DE COMPONENTES (Para Operação Integrada)
+// =============================================================================
+// Ative (1) ou desative (0) os componentes para o funcionamento integrado.
+#define HABILITAR_MOTORES    1
+#define HABILITAR_ENCODERS   1
+#define HABILITAR_ULTRASSOM  1
+#define HABILITAR_RFID       1
+#define HABILITAR_TOF        1
+#define HABILITAR_IMU        1
+#define HABILITAR_ADC        1
+
+// Configurações de logs e telemetria
 #define DEBUG_TELEMETRIA_USB 1
 #define INTERVALO_LOG_SISTEMA_MS 1000
 
 // --- Motores (Etiquetas do Esquema) ---
-#define PWM_ESQ   32
-#define DIR_ESQ   33
-#define PWM_DIR   25
-#define DIR_DIR   26
-#define PWM_CARG  27
-#define DIR_CARG  14
+// Os pinos "DIR" definem o sentido lógico (HIGH = frente, LOW = trás, ou vice-versa).
+
+// Motor Esquerdo
+#define PWM_ESQ   32 // Pino de controle de velocidade (PWM)
+#define DIR_ESQ   33 // Pino de sentido de rotação lógico
+
+// Motor Direito
+#define PWM_DIR   25 // Pino de controle de velocidade (PWM)
+#define DIR_DIR   26 // Pino de sentido de rotação lógico
+
+// Motor de Carga (Elevação/Descarga)
+#define PWM_CARG  27 // Pino de controle de velocidade (PWM)
+#define DIR_CARG  14 // Pino de sentido de rotação lógico
 
 // Ajuste de sentido dos motores de tracao.
 // Use 1 quando "frente" no software estiver fazendo o motor girar para tras.

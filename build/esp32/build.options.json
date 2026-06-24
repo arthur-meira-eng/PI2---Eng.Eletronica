@@ -3,7 +3,7 @@
   "compiler.optimization_flags": "-Os",
   "customBuildProperties": "",
   "fqbn": "esp32:esp32:esp32",
-  "hardwareFolders": "/home/yaba/.arduino15/packages/esp32/hardware/esp32/3.3.8,/home/yaba/.arduino15/packages/esp32/hardware/esp32/3.3.8",
-  "otherLibrariesFolders": "/home/yaba/Arduino/libraries",
-  "sketchLocation": "/home/yaba/Sandbox/PI2---Eng.Eletronica/PI2"
+  "hardwareFolders": "/Users/yaba/Library/Arduino15/packages/esp32/hardware/esp32/3.3.8,/Users/yaba/Library/Arduino15/packages/esp32/hardware/esp32/3.3.8",
+  "otherLibrariesFolders": "/Users/yaba/Documents/Arduino/libraries",
+  "sketchLocation": "/Users/yaba/Sandbox/PI2---Eng.Eletronica/PI2"
 }

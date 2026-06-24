@@ -152,17 +152,44 @@ void initRFID() {
     Serial.println("[RFID] Aproxime uma tag/cartao do leitor.");
 }
 
-String lerTagRFID() {
-    static unsigned long ultimaVarredura = 0;
-    static unsigned long ultimoLogVida = 0;
-    static unsigned long ultimoLogBusca = 0;
+static String processarTagDetectada() {
     static unsigned long ultimaLeitura = 0;
     static String ultimoUID = "";
-#if RFID_USAR_IRQ
-    static unsigned long ultimaRearmada = 0;
-#endif
+
+    Serial.println("[RFID] Tag detectada. Lendo UID...");
+    if (!mfrc522.PICC_ReadCardSerial()) {
+        Serial.println("[RFID] ERRO: falha ao ler serial da tag.");
+        return "";
+    }
+
+    String conteudo = "";
+    for (byte i = 0; i < mfrc522.uid.size; i++) {
+        conteudo.concat(String(mfrc522.uid.uidByte[i] < 0x10 ? " 0" : " "));
+        conteudo.concat(String(mfrc522.uid.uidByte[i], HEX));
+    }
+    conteudo.toUpperCase();
+    conteudo = conteudo.substring(1);
+
+    if (conteudo == ultimoUID && millis() - ultimaLeitura < 1500) {
+        return "";
+    }
+    ultimoUID = conteudo;
+    ultimaLeitura = millis();
+
+    Serial.print("[RFID] UID: ");
+    Serial.println(conteudo);
+    imprimirDadosGravadosRFID();
+    mfrc522.PICC_HaltA();
+    
+    return conteudo;
+}
 
 #if RFID_USAR_IRQ
+
+String lerTagRFID() {
+    static unsigned long ultimoLogVida = 0;
+    static unsigned long ultimaRearmada = 0;
+
     if (!rfidBuscaArmada || millis() - ultimaRearmada > 1000) {
         armarBuscaRFIDPorIRQ();
         ultimaRearmada = millis();
@@ -185,6 +212,20 @@ String lerTagRFID() {
             recuperarBuscaRFIDPorIRQ(false);
             return "";
         }
+
+        mfrc522.PCD_WriteRegister(MFRC522::CommandReg, MFRC522::PCD_Idle);
+        mfrc522.PCD_WriteRegister(MFRC522::ComIrqReg, 0x7F);
+        mfrc522.PCD_WriteRegister(MFRC522::BitFramingReg, 0x00);
+        Serial.println("[RFID] RxIRq confirmado. Lendo UID...");
+
+        String tag = processarTagDetectada();
+        
+        if (tag == "") {
+            recuperarBuscaRFIDPorIRQ(true);
+        } else {
+            recuperarBuscaRFIDPorIRQ(false);
+        }
+        return tag;
     } else {
         if (millis() - ultimoLogVida > 2000) {
             Serial.print("[RFID] Aguardando IRQ. Estado IRQ=");
@@ -193,8 +234,15 @@ String lerTagRFID() {
         }
         return "";
     }
+}
 
 #else
+
+String lerTagRFID() {
+    static unsigned long ultimaVarredura = 0;
+    static unsigned long ultimoLogVida = 0;
+    static unsigned long ultimoLogBusca = 0;
+
     if (millis() - ultimoLogVida > 2000) {
         Serial.println("[RFID] Loop ativo.");
         ultimoLogVida = millis();
@@ -204,14 +252,7 @@ String lerTagRFID() {
         return "";
     }
     ultimaVarredura = millis();
-#endif
 
-#if RFID_USAR_IRQ
-    mfrc522.PCD_WriteRegister(MFRC522::CommandReg, MFRC522::PCD_Idle);
-    mfrc522.PCD_WriteRegister(MFRC522::ComIrqReg, 0x7F);
-    mfrc522.PCD_WriteRegister(MFRC522::BitFramingReg, 0x00);
-    Serial.println("[RFID] RxIRq confirmado. Lendo UID...");
-#else
     if (!mfrc522.PICC_IsNewCardPresent()) {
         if (millis() - ultimoLogBusca > 1000) {
             Serial.println("[RFID] Procurando tag por polling...");
@@ -219,37 +260,8 @@ String lerTagRFID() {
         }
         return "";
     }
-#endif
 
-    Serial.println("[RFID] Tag detectada. Lendo UID...");
-    if (!mfrc522.PICC_ReadCardSerial()) {
-        Serial.println("[RFID] ERRO: falha ao ler serial da tag.");
-#if RFID_USAR_IRQ
-        recuperarBuscaRFIDPorIRQ(true);
-#endif
-        return "";
-    }
-
-    String conteudo = "";
-    for (byte i = 0; i < mfrc522.uid.size; i++) {
-        conteudo.concat(String(mfrc522.uid.uidByte[i] < 0x10 ? " 0" : " "));
-        conteudo.concat(String(mfrc522.uid.uidByte[i], HEX));
-    }
-    conteudo.toUpperCase();
-    conteudo = conteudo.substring(1);
-
-    if (conteudo == ultimoUID && millis() - ultimaLeitura < 1500) {
-        return "";
-    }
-    ultimoUID = conteudo;
-    ultimaLeitura = millis();
-
-    Serial.print("[RFID] UID: ");
-    Serial.println(conteudo);
-    imprimirDadosGravadosRFID();
-    mfrc522.PICC_HaltA();
-#if RFID_USAR_IRQ
-    recuperarBuscaRFIDPorIRQ(false);
-#endif
-    return conteudo;
+    return processarTagDetectada();
 }
+
+#endif

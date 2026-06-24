@@ -16,24 +16,22 @@ void initMotores() {
     Serial.println("[MOTORES] Saidas configuradas e todos os motores parados.");
 }
 
-void acionarMotorEsq(int velocidade) {
+static void acionarMotor(int pinPWM, int pinDIR, int velocidade, bool invertido) {
     velocidade = constrain(velocidade, -255, 255);
     bool sentidoFrente = velocidade >= 0;
-#if MOTOR_ESQ_INVERTIDO
-    sentidoFrente = !sentidoFrente;
-#endif
-    digitalWrite(DIR_ESQ, sentidoFrente ? HIGH : LOW);
-    analogWrite(PWM_ESQ, abs(velocidade));
+    if (invertido) {
+        sentidoFrente = !sentidoFrente;
+    }
+    digitalWrite(pinDIR, sentidoFrente ? HIGH : LOW);
+    analogWrite(pinPWM, abs(velocidade));
+}
+
+void acionarMotorEsq(int velocidade) {
+    acionarMotor(PWM_ESQ, DIR_ESQ, velocidade, MOTOR_ESQ_INVERTIDO);
 }
 
 void acionarMotorDir(int velocidade) {
-    velocidade = constrain(velocidade, -255, 255);
-    bool sentidoFrente = velocidade >= 0;
-#if MOTOR_DIR_INVERTIDO
-    sentidoFrente = !sentidoFrente;
-#endif
-    digitalWrite(DIR_DIR, sentidoFrente ? HIGH : LOW);
-    analogWrite(PWM_DIR, abs(velocidade));
+    acionarMotor(PWM_DIR, DIR_DIR, velocidade, MOTOR_DIR_INVERTIDO);
 }
 
 void acionarMotorCarga(int velocidade, bool subir) {
